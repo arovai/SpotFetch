@@ -58,6 +58,83 @@ It is recommended to use a virtual environement since installing requirements gl
 before running `pip install -r requirements.txt` make sure you [create](https://docs.python.org/3/library/venv.html#creating-virtual-environments) and then [activate](https://docs.python.org/3/library/venv.html#how-venvs-work) a venv, and if on Windows and running powershell you might need to run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` before activating the venv.
 
 
+## Usage
+
+### Traditional Menu Interface
+
+Run the interactive menu:
+
+```bash
+python3 menu.py
+```
+
+### CLI Mode (New!)
+
+For scripting and automation, use the CLI tool to avoid terminal menus:
+
+```bash
+python3 cli.py --input-csv PATH_TO_CSV --output PATH_TO_OUTPUT [OPTIONS]
+```
+
+Or use the shorthand:
+
+```bash
+./spotfetch --input-csv PATH_TO_CSV --output PATH_TO_OUTPUT [OPTIONS]
+```
+
+#### CLI Examples
+
+**Single CSV file:**
+```bash
+python3 cli.py --input-csv ~/playlists/my_playlist.csv --output ~/downloads
+```
+
+**Batch mode - process all CSVs in a folder:**
+```bash
+python3 cli.py --input-csv ~/playlists/*.csv --output ~/downloads
+```
+
+**Specify audio format and platform:**
+```bash
+python3 cli.py --input-csv playlist.csv --output ./downloads --format flac --platform youtube
+```
+
+**Use cookie file for age-restricted content:**
+```bash
+python3 cli.py --input-csv playlist.csv --output ./downloads --cookies ~/youtube_cookies.txt
+```
+
+**Disable automatic CSV format detection:**
+```bash
+python3 cli.py --input-csv playlist.csv --output ./downloads --no-detect
+```
+
+**Verbose output for debugging:**
+```bash
+python3 cli.py --input-csv playlist.csv --output ./downloads --verbose
+```
+
+#### CLI Options
+
+- `-i, --input-csv PATH`: Path to CSV file(s). Supports glob patterns like `./playlists/*.csv` (required)
+- `-o, --output PATH`: Base output directory where folders will be created (required)
+- `-f, --format {mp3,m4a,flac}`: Audio format (default: mp3)
+- `-p, --platform {youtube,ytmusic}`: Download platform (default: ytmusic)
+- `-c, --cookies PATH`: Path to cookies file for age-restricted content
+- `--no-detect`: Disable automatic CSV format detection, use custom format
+- `--verbose`: Enable verbose output for debugging
+
+#### CLI Features
+
+- **Automatic CSV format detection**: Detects Exportify, TuneMyMusic, and custom CSV formats
+- **Folder creation**: Automatically creates a subfolder with the CSV filename for organized output
+- **Batch processing**: Use glob patterns to process multiple CSV files at once
+- **Progress tracking**: Visual progress indicators during downloads
+- **Flexible format support**: MP3, M4A (M4B), and FLAC
+- **Platform selection**: Choose between YouTube Music (default) or YouTube
+- **Cookie support**: Handle age-restricted content with cookie files
+
+
 ## Some details :
 
 
