@@ -16,7 +16,6 @@ From: python:3.11-slim-bookworm
         apptainer run spotfetch.sif --help
 
 %environment
-    export PATH="/opt/yt-dlp:$PATH"
     export PYTHONUNBUFFERED=1
 
 %post
@@ -34,9 +33,9 @@ From: python:3.11-slim-bookworm
         && rm -rf /var/lib/apt/lists/*
 
     # Create application directory
-    mkdir -p /app /opt/yt-dlp
+    mkdir -p /app
 
-    # Clone and install yt-dlp from GitHub (latest version)
+    # Install yt-dlp from GitHub (latest version)
     cd /tmp
     git clone https://github.com/yt-dlp/yt-dlp.git
     cd yt-dlp
@@ -44,7 +43,7 @@ From: python:3.11-slim-bookworm
         --trusted-host pypi.python.org \
         --trusted-host pypi.org \
         --trusted-host files.pythonhosted.org \
-        -e .
+        .
     cd /
     rm -rf /tmp/yt-dlp
 
