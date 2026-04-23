@@ -30,32 +30,96 @@ A simple python program to download Music from various platfroms using yt-dlp ( 
 - Clone this repository ( or just download it as a zip file and uncompress it ):
 
 ```bash
-git clone https://github.com/MrElyazid/SpotFetch.git
-```
-
-- then :
-
-```bash
+git clone https://github.com/arovai/SpotFetch.git
 cd SpotFetch
 ```
 
-- Install `requirements.txt` ( preferably use a new virtual environement ):
+**Option 1: Automated Setup (Recommended)**
+
+Run the setup script which handles everything including the latest yt-dlp from GitHub:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+Or with virtual environment:
+
+```bash
+./setup.sh --venv
+```
+
+**Option 2: Manual Setup**
+
+Install base requirements:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-- Thats it, now run `menu.py` :
+Then install the latest yt-dlp from GitHub:
+
+```bash
+git clone https://github.com/yt-dlp/yt-dlp.git
+pip install -e yt-dlp/
+rm -rf yt-dlp
+```
+
+- Now run `menu.py` :
 
 ```bash
 python3 menu.py
-# or python menu.py
-# or py menu.py
 ```
 
 ### note :
 It is recommended to use a virtual environement since installing requirements globally on your machine is generally bad,
 before running `pip install -r requirements.txt` make sure you [create](https://docs.python.org/3/library/venv.html#creating-virtual-environments) and then [activate](https://docs.python.org/3/library/venv.html#how-venvs-work) a venv, and if on Windows and running powershell you might need to run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` before activating the venv.
+
+### Using Apptainer/Singularity Container
+
+SpotFetch can be containerized using [Apptainer](https://apptainer.org/) (formerly Singularity) for reproducible, isolated environments.
+
+**Building the Container:**
+
+1. Install Apptainer following the [official guide](https://apptainer.org/docs/user/main/quick_start.html)
+
+2. Build the SIF image:
+
+```bash
+sudo apptainer build spotfetch.sif spotfetch.def
+```
+
+**Running SpotFetch in the Container:**
+
+```bash
+# Get help
+apptainer run spotfetch.sif --help
+
+# Download from a single CSV
+apptainer run spotfetch.sif --input-csv playlist.csv --output ./downloads
+
+# Batch download all CSVs in a folder
+apptainer run spotfetch.sif --input-csv ./playlists/*.csv --output ./downloads
+
+# With custom options
+apptainer run spotfetch.sif --input-csv playlist.csv --output ./downloads --format flac --platform youtube
+```
+
+**Using with Bind Mounts:**
+
+To access files outside the container, use bind mounts:
+
+```bash
+apptainer run --bind /host/path:/container/path spotfetch.sif --input-csv /container/path/playlist.csv --output /container/path/downloads
+```
+
+**Container Contents:**
+
+- Python 3.11
+- Latest yt-dlp from GitHub
+- FFmpeg with full codec support
+- All SpotFetch dependencies
+- CLI tool ready to use
 
 
 ## Usage
@@ -206,27 +270,25 @@ pkg install git python ffmpeg
 - Clone this repo :
 
 ```bash
-git clone https://github.com/MrElyazid/SpotFetch
-```
-
-- cd into the directory :
-
-```bash
+git clone https://github.com/arovai/SpotFetch
 cd SpotFetch/
 ```
-- install the requirements:
+
+- Run the setup script:
 
 ```bash
-pip install -r requirements.txt
+bash setup.sh
 ```
 
 - Rotate your phone :
 do it so that the terminal UI doesnt look awful :/
 
-- Run `menu.py` :
+- Run `menu.py` or use the CLI:
 
 ```bash
 python menu.py
+# or
+python cli.py --input-csv playlist.csv --output ./downloads
 ```
 
 Thats it, after downloading try to locate where Termux stores files on your Android and access your downloaded files there.

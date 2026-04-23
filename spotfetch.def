@@ -1,0 +1,79 @@
+BootStrap: docker
+From: python:3.11-slim-bookworm
+
+%labels
+    Author "SpotFetch Contributors"
+    Version 1.0
+    Description "SpotFetch - Download audio from YouTube/YouTube Music using Spotify playlists"
+    Homepage "https://github.com/arovai/SpotFetch"
+
+%help
+    SpotFetch CLI - Download audio from YouTube/YouTube Music
+    
+    Usage:
+        apptainer run spotfetch.sif --input-csv playlist.csv --output ./downloads
+        apptainer run spotfetch.sif --input-csv ./playlists/*.csv --output ./downloads
+        apptainer run spotfetch.sif --help
+
+%environment
+    export PATH="/opt/yt-dlp:$PATH"
+    export PYTHONUNBUFFERED=1
+
+%post
+    # Update package manager
+    apt-get update && apt-get upgrade -y
+
+    # Install system dependencies
+    apt-get install -y \
+        build-essential \
+        git \
+        ffmpeg \
+        curl \
+        wget \
+        ca-certificates \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Create application directory
+    mkdir -p /app /opt/yt-dlp
+
+    # Clone and install yt-dlp from GitHub (latest version)
+    cd /tmp
+    git clone https://github.com/yt-dlp/yt-dlp.git
+    cd yt-dlp
+    pip install --no-cache-dir \
+        --trusted-host pypi.python.org \
+        --trusted-host pypi.org \
+        --trusted-host files.pythonhosted.org \
+        -e .
+    cd /
+    rm -rf /tmp/yt-dlp
+
+    # Install Python dependencies with trusted hosts
+    pip install --no-cache-dir \
+        --trusted-host pypi.python.org \
+        --trusted-host pypi.org \
+        --trusted-host files.pythonhosted.org \
+        certifi==2025.7.9 \
+        charset-normalizer==3.4.2 \
+        idna==3.10 \
+        markdown-it-py==3.0.0 \
+        mdurl==0.1.2 \
+        mutagen==1.47.0 \
+        Pygments==2.19.2 \
+        requests==2.32.4 \
+        rich==14.1.0 \
+        urllib3==2.5.0
+
+    # Clone SpotFetch repository
+    git clone https://github.com/arovai/SpotFetch.git /app/spotfetch
+    cd /app/spotfetch
+    chmod +x cli.py spotfetch
+    
+    # Create executable wrapper
+    ln -s /app/spotfetch/cli.py /usr/local/bin/spotfetch-cli
+
+%runscript
+    exec python3 /app/spotfetch/cli.py "$@"
+
+%startscript
+    exec python3 /app/spotfetch/cli.py "$@"
